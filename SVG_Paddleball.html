@@ -1,0 +1,306 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>
+      SVG Paddleball
+    </title>
+    
+    <style>
+    
+    #myHead
+    {
+      position:absolute;
+      top: 10px;
+      left: 30px;
+    }
+    
+    #myPara
+    
+    {
+      position:absolute;
+      top: 60px;
+      left: 30px;
+    }
+    
+    #sethPara
+    
+    {
+      position:absolute;
+      top: 460px;
+      left: 10px;
+    }
+    
+    
+    </style>
+     
+    <script>
+
+      // --- Global variables ---
+
+      // Width and height of board in pixels
+      var boardWidth = 320;
+      var boardHeight = 460;
+      var boardWidthPixels = boardWidth + "px";
+      var boardHeightPixels = boardHeight + "px";
+      
+      var padMove = 20;  // Amount the paddle moves.
+      var score = 0;     // Initial score.
+
+      // URL for W3C definition of SVG elements
+      var svgURL = "http://www.w3.org/2000/svg";
+           
+      // Variables for ball initial position.
+      var ballHor = boardWidth / 2 - 20;
+      var ballVer = 50;
+      var ballHorPixels = ballHor + "px";
+      var ballVerPixels = ballVer + "px";
+      
+      // Amount of vertical and horizontal change.
+      // Think of this is a vector. Speed + direction.
+      var changeHor = 5;
+      var changeVer = 5;
+      
+      // Covers all versions of requestAnimationFrame.
+      window.requestAnimationFrame = 
+      window.requestAnimationFrame || 
+      window.mozRequestAnimationFrame ||
+      window.webkitRequestAnimationFrame || 
+      window.msRequestAnimationFrame;  
+      
+      // Page load event listener.
+      window.addEventListener("load", 
+        runFirst, false);
+        
+      // Mousedown event listener.
+      window.addEventListener(
+        "mousedown", whereMouse, false);
+                        
+      // Runs when page loads.     
+      function runFirst() {  
+
+        // Define the game board as an SVG element.
+        gameBoard = 
+          document.createElementNS(svgURL, "svg");
+          
+        // Width and height of the SVG board element.
+        gameBoard.width.baseVal.valueAsString = 
+          boardWidthPixels;
+        gameBoard.height.baseVal.valueAsString = 
+          boardHeightPixels;        
+          
+        // You must append the board to the body.
+        document.getElementById("pageBody").
+          appendChild(gameBoard);
+        
+        // Define the board as an SVG element.
+        myBoard = 
+          document.createElementNS(svgURL, "rect");
+          
+        // Width,  height, and color of board.
+        myBoard.x.baseVal.valueAsString = 
+          "0px";
+        myBoard.y.baseVal.valueAsString = 
+          "0px";
+        myBoard.width.baseVal.valueAsString = 
+          boardWidthPixels;
+        myBoard.height.baseVal.valueAsString = 
+          boardHeightPixels;
+        myBoard.style.
+          setProperty("fill","lightgray","");
+          
+        // Attach the board to the game board.
+        gameBoard.appendChild(myBoard);
+        
+        // Define the ball as an SVG element.
+        paddleBall = 
+          document.createElementNS(svgURL, "circle");
+          
+        // Width,  height, radius, and color of ball.
+        paddleBall.cx.baseVal.valueAsString = 
+          ballHorPixels;
+        paddleBall.cy.baseVal.valueAsString = 
+          ballVerPixels;
+        paddleBall.r.baseVal.valueAsString =
+          "10px";
+        paddleBall.style.
+          setProperty("fill","fuchsia","");
+          
+        // Attach the ball to the game board.
+        gameBoard.appendChild(paddleBall);
+        
+        // Define the paddle.
+        myPaddle = 
+          document.createElementNS(svgURL, "rect");
+          
+        // X, Y, width, height, and color of paddle.
+        myPaddle.x.baseVal.valueAsString = "90px";
+        myPaddle.y.baseVal.valueAsString = "400px";
+        myPaddle.width.baseVal.valueAsString = "130px";
+        myPaddle.height.baseVal.valueAsString = "20px";
+        myPaddle.style.setProperty("fill", "darkcyan","");
+        
+        // Attach the paddle to the board.
+        gameBoard.appendChild(myPaddle);
+        
+        // Color the page elements.
+        pageBody.style.backgroundColor = "black";
+        myHead.style.color = "red";
+        myPara.style.color = "green"; 
+        sethPara.style.color = "white";      
+         
+        // Start the game loop.
+        gameLoop();
+      }
+        
+    // Game loop. Runs as fast as it can.
+    function gameLoop(){
+      
+      // Endless loop with requestAnimationFrame.
+      requestAnimationFrame(gameLoop);
+       
+      // Move the ball.
+      ballMove();         
+    }
+      
+    // Move the ball. 
+    function ballMove() {
+      
+      // Changes are calculated but do not
+      // take effect until next time through loop.
+          
+      // Calculate new vertical component.
+      ballVer = ballVer + changeVer; 
+
+      // If top is hit, bounce off.
+      if (ballVer + changeVer < 10) 
+        changeVer = -changeVer;
+        
+      // If bottom is hit, the game is over.
+      if (ballVer + changeVer + 10 > boardHeight) {
+        changeVer = -changeVer;
+        
+        // You missed!
+        console.log("Hit bottom");
+        
+        // Game over - actions
+        // Set the score to zero.
+        score = 0;
+        myPara.textContent = "Score = " + score; 
+        
+        // Alert the player.
+        alert("You missed the ball!  Start again");
+        
+        // Start over again.
+        // Set ball position.
+        ballHor = boardWidth / 2 - 20;
+        ballVer = 50;
+        
+        // Set ball vector.
+        changeHor = 5;
+        changeVer = 5;
+        
+        // Set paddle position.
+        myPaddle.setAttribute("x", "90px"); 
+        
+        // Exit here and don't do any more now.
+        return;
+      }
+
+      // Calculate new horizontal component.
+      ballHor = ballHor + changeHor;
+
+      // If left edge hit, bounce off.
+      if (ballHor + changeHor < 10)
+        changeHor = -changeHor;
+        
+      // If right edge is hit, bounce off.
+      if (ballHor + changeHor + 10 > boardWidth) 
+        changeHor = -changeHor;
+        
+      // Does a collision take place with paddle?     
+      // Get bounding box of ball.
+      bbBall = paddleBall.getBBox();       
+      // Get bounding box of paddle.
+      bbPaddle = myPaddle.getBBox();         
+      
+      // Compare bounding boxes.    
+      // Is the ball intersecting the paddle?
+      // Four conditions must be met.
+      if  ((bbBall.x > bbPaddle.x) &&
+        (bbBall.x < (bbPaddle.x + 140)) &&
+        (bbBall.y > bbPaddle.y) &&
+        (bbBall.y < bbPaddle.y + 10)){
+          console.log("HIT");  
+          
+          // If hitting the paddle, reverse vertical.
+          changeVer = -changeVer;
+          
+          // Make a small spin to create variation.
+          spin = Math.floor((Math.random()*5)) - 2;
+          // Add spin to horizontal vector.
+          changeHor = changeHor + spin;  
+          
+          // Bounce ball up to untangle from paddle.
+          ballVer = ballVer - 20;
+          
+          // Increase score.
+          score = score + 1;
+          myPara.textContent = "Score = " + score; 
+      }          
+
+      // Draw the ball with new coordinates.
+      paddleBall.cx.baseVal.valueAsString = 
+        ballHor + "px";
+      paddleBall.cy.baseVal.valueAsString = 
+        ballVer + "px";  
+    } 
+
+    // Handle mousedown event.
+    // Tap once each time to move paddle.
+    function whereMouse(evt) {
+    
+      // Get mouse coordinates.
+      mouseX = evt.clientX;
+      mouseY = evt.clientY;
+      
+      // Current paddle position.
+      oldX = myPaddle.x.baseVal.value;    
+      
+      // Calculate which side click is on.
+      // If tap is on right of center.
+      if (mouseX > 160) {
+        newX = oldX + padMove;
+        // If new x would go off screen.
+        if (newX > 210)
+          newX = oldX;
+      }
+      // If tap is on left side of center.
+      else {
+        newX = oldX - padMove;
+        // If new x would go off screen.
+        if (newX < 10)
+          newX = oldX;
+      }
+      
+      // Move paddle.
+      myPaddle.setAttribute("x", newX);      
+    }    
+
+  </script>
+</head>
+    
+<body id="pageBody">
+<h1 id="myHead">SVG Paddleball</h1>
+  
+  <p id="myPara">Score = 0</p>
+  
+  <p id="sethPara">Click or touch the paddle to move it left or right.<br> 
+  This game is created using the SVG DOM with no additional art files.<br>
+  Uses SVG getBBox to detect collisions. Uses requestAnimationFrame.<br>
+  Copyright (c) 2017 Seth McEvoy.
+  </p>
+  
+</body>
+
+</html>
