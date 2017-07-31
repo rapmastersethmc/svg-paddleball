@@ -1,3 +1,4 @@
 # License
 
-## Apache 2.0
+This code is copyright (c) 2017 Seth McEvoy.
+All rights reserved.
