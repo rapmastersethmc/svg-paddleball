@@ -48,5 +48,7 @@ SVG works with objects. A container object is created with the URL for the W3C S
 
 CSS is used to set up the HTML element styles on the page, but CSS styles also can be used with SVG to set properties of the SVG objects.
 
+#### Copyright
+
 Code and text copyright (c) 2017 Seth McEvoy
 
